@@ -63,8 +63,8 @@ program openmp_rocblas
     else
       stream = 1
     end if
-    !!$omp target teams distribute parallel do nowait depend(out:streams(stream))
-    !$omp target teams distribute parallel do nowait depend(out:x(outer,:),y(outer,:))
+    !$omp target teams distribute parallel do nowait depend(out:streams(stream))
+    !!$omp target teams distribute parallel do nowait depend(out:x(:, outer),y(:, outer))
     do inner = 1, ninner
       x(inner, outer) = 0.125_real64
       y(inner, outer) = 0.25_real64
@@ -83,8 +83,8 @@ program openmp_rocblas
     end if
     !write(*,*) "Before task ", outer, ": ", event
     !write(*,*) "  location: ", loc(event)
-    !!$omp task depend(inout:streams(stream)) detach(event)
-    !$omp task depend(inout:x(outer,:),y(outer,:)) detach(event)
+    !$omp task depend(inout:streams(stream)) detach(event)
+    !!$omp task depend(inout:x(:, outer),y(:, outer)) detach(event)
     !$omp target data use_device_addr(x,y)
     call hipblascheck(hipblasdaxpy(handles(outer), ninner, a, c_loc(x(1, outer)), 1, c_loc(y(1, outer)), 1))
     !$omp end target data
@@ -108,8 +108,8 @@ program openmp_rocblas
     else
       stream = 1
     end if
-    !!$omp target teams distribute parallel do nowait depend(in:streams(stream))
-    !$omp target teams distribute parallel do nowait depend(in:x(outer,:)) depend(inout:y(outer,:))
+    !$omp target teams distribute parallel do nowait depend(in:streams(stream))
+    !!$omp target teams distribute parallel do nowait depend(in:x(:, outer)) depend(inout:y(:, outer))
     do inner = 1, ninner
       y(inner, outer) = y(inner, outer) - a*x(inner, outer)
     end do
