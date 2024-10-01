@@ -69,12 +69,12 @@ contains
     this%res = this%rhs
     !write(stdout,*) this%res
     !!$omp target enter data map(to:mesh%n_x,mesh%n_y,mesh%dx,mesh%dy)
-    !!$omp target enter data map(to:this%u,this%rhs,this%au,this%res)
+    !$omp target enter data map(to:this%u,this%rhs,this%au,this%res)
     !!$omp target enter data map(to:this,this%u,this%rhs,this%au,this%res)
     !!$omp target enter data map(to:this)
-    associate(u=>this%u,rhs=>this%rhs,au=>this%au,res=>this%res)
-      !$omp target enter data map(to:u,rhs,au,res)
-    end associate
+    !associate(u=>this%u,rhs=>this%rhs,au=>this%au,res=>this%res)
+    !  !$omp target enter data map(to:u,rhs,au,res)
+    !end associate
 
     !!$omp target update from(this%res)
     !write(stdout,*) this%res
@@ -161,7 +161,7 @@ contains
     flops = 17._real64*lattice_updates
     bandwidth = 12._real64*lattice_updates*real64
 
-    write(stdout,'(A,F5.3,A)') 'Measured lattice updates: ',lattice_updates/this%elapsed/1.e9_real64,' LU/s'
+    write(stdout,'(A,F6.3,A)') 'Measured lattice updates: ',lattice_updates/this%elapsed/1.e9_real64,' LU/s'
     write(stdout,'(A,F5.1,A)') 'Effective Flops: ',flops/this%elapsed/1.e9_real64,' GFlops'
     write(stdout,'(A,F5.3,A)') 'Effective device bandwidth: ',bandwidth/this%elapsed/1.e12_real64,' TB/s'
     write(stdout,'(A,F5.3)') 'Effective AI=',flops/bandwidth
